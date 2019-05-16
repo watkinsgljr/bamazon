@@ -25,6 +25,7 @@ connection.connect(function (err) {
 
 let inventory = readItems();
 let shoppingCart = [];
+takeCustomerOrder();
 
 
 
@@ -50,17 +51,19 @@ function displayProducts(inv) {
 
 }
 
-function searchInvById(id) {
+function searchInvById(id, callback) {
     console.log("Finding item...\n");
     connection.query(`SELECT * FROM products WHERE id = ${id}`, function (err, res) {
         if (err) throw err;
-        console.log(res);
-        return (res);
+        
+        callback(res[0]);
+      
     });
 
 }
 
 function takeCustomerOrder() {
+
 
     inquirer.prompt([
 
@@ -77,26 +80,33 @@ function takeCustomerOrder() {
         },
 
     ]).then(function (order) {
-        customerOrder = searchInvById(order.itemId);
 
-        if (order.quantity >= customerOrder.stock) {
-            for (var i = 0; i < order.quantity; i++) {
-                addToCart(customerOrder);
-            }
-            
+        searchInvById(order.itemId, function (customerOrder) {
 
+            console.log(customerOrder);
 
-        } else {
-                console.log(`I'm sorry but you orderd ${order.quantitiy} ${order.product} but we have ${customerOrder.stock}. Try placing a different order.`)
+            if (order.quantity <= customerOrder.stock) {
+                for (var i = 0; i < order.quantity; i++) {
+                    addToCart(customerOrder);
+                }
+
+            } else {
+                console.log(`I'm sorry but you orderd ${order.quantity} ${customerOrder.product} but we have ${customerOrder.stock} in stock. Try placing a different order.`);
+                takeCustomerOrder();
 
 
             };
         });
+
+
+        });
+
 }
 
 function addToCart(order) {
     shoppingCart.push(order);
     console.log("Added to cart!");
+    console.log(shoppingCart);
     inquirer.prompt([
 
         {
@@ -129,9 +139,9 @@ function checkout(cart) {
         cost += cart[i].price;
     }
 
-    salesTax = cost * .07;
-    totalCost = salesTax + cost;
-    console.log(`Total Before Tax: ${cost} \n Sales Tax: ${salesTax} \n Total: ${totalCost} \n \n \n`);
+    const salesTax = cost * .07;
+    const totalCost = salesTax + cost;
+    console.log(`Total Before Tax: $${cost} \n Sales Tax: $${salesTax} \n Total: $${totalCost} \n \n \n`);
 
     inquirer.prompt([
 
