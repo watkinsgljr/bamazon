@@ -31,7 +31,7 @@ inquirer.prompt([
         type: "password",
         name: "myPassword",
         message: "Please input your password to continue."
-    },
+    }
 
 ]).then(function (auth) {
 
@@ -43,8 +43,6 @@ inquirer.prompt([
         console.log("Verify you password and try again");
         console.log("==============================================");
     }
-
-
     else {
 
         inquirer.prompt([
@@ -54,7 +52,7 @@ inquirer.prompt([
                 name: "action",
                 message: "Hello, how may I assist you today?",
                 choices: ["View products for sale", "View low inventory", "Add to inventory", "Add new product"]
-            },
+            }
 
         ]).then(function (mgmt) {
 
@@ -62,19 +60,19 @@ inquirer.prompt([
 
                 viewProducts();
 
-            } else if (mgmt.action === "View low inventory") {
+            }
+            else if (mgmt.action === "View low inventory") {
 
                 viewLowInventory();
 
-            } else if (mgmt.action === "Add to inventory") {
+            }
+            else if (mgmt.action === "Add to inventory") {
 
                 restockProduct(function (products) {
-
 
                     const choicesDis = [];
                     for (var i = 0; i < products.length; i++) {
                         choicesDis.push(products[i].product);
-
                     }
 
                     inquirer.prompt([
@@ -83,15 +81,15 @@ inquirer.prompt([
                             type: "list",
                             name: "product",
                             message: "Which product are you replenishing today?",
-                            choices: choicesDis,
+                            choices: choicesDis
                         },
 
                         {
                             type: "input",
                             name: "quantity",
                             message: "How many units are you adding?",
-                            choices: choicesDis,
-                        },
+                            choices: choicesDis
+                        }
 
                     ]).then(function (response) {
 
@@ -115,69 +113,139 @@ inquirer.prompt([
                                 }
                             );
                         });
-
                     });
 
                 });
-
-            } else {
-
-                addProduct();
-
             }
+            else {
 
+                getDepartmentChoices(function (departments) {
+                    console.log("hello");
+
+                    const choicesDis = [];
+                    for (var i = 0; i < departments.length; i++) {
+                        choicesDis.push(departments[i].department);
+                    }
+
+                    inquirer.prompt([
+
+                        {
+                            type: "input",
+                            name: "product",
+                            message: "What product are we adding today?"
+                        },
+
+                        {
+                            type: "list",
+                            name: "department",
+                            message: "Which department will this product be?",
+                            choices: choicesDis
+                        },
+
+                        {
+                            type: "input",
+                            name: "price",
+                            message: "What will be the price of our new product?",
+                        },
+
+                        {
+                            type: "input",
+                            name: "stock",
+                            message: "How much inventory will we begin with?"
+                        }
+
+                    ]).then(function () {
+                        console.log("Inserting a new product...\n");
+                        const query = connection.query(
+                            "INSERT INTO products SET ?",
+                            {
+                                product: res.product,
+                                department: res.department,
+                                price: res.price,
+                                stock: res.stock,
+                                sale: 0,
+                                sale_price: null
+                            },
+                            function (err, res) {
+                                console.log(res.affectedRows + " product inserted!\n");
+                                // Call updateProduct AFTER the INSERT completes
+                            });
+                    });
+
+                });
+            }
         });
     }
 });
 
 
-function viewLowInventory(cutoff = 51) {
+        function viewLowInventory(cutoff = 51) {
 
-    console.log("Finding low inventory...\n");
-    connection.query(`SELECT * FROM products WHERE stock < ${cutoff}`, function (err, res) {
-        if (err) throw err;
-        // Log all results of the SELECT statement
-        console.log(res);
-        connection.end();
-    });
+            console.log("Finding low inventory...\n");
+            connection.query(`SELECT * FROM products WHERE stock < ${cutoff}`, function (err, res) {
+                if (err) throw err;
+                // Log all results of the SELECT statement
+                console.log(res);
+                connection.end();
+            });
 
-}
+        }
 
-function restockProduct(callback) {
-    connection.query(`SELECT product FROM products`, function (err, res) {
-        if (err) throw err;
+        function restockProduct(callback) {
+            connection.query(`SELECT product FROM products`, function (err, res) {
+                if (err) throw err;
 
-        callback(res);
+                callback(res);
 
-    });
-}
+            });
+        }
 
-function viewProducts() {
-    console.log("Selecting all products...\n");
-    connection.query("SELECT * FROM products", function (err, res) {
-        if (err) throw err;
-        displayProducts(res);
-        console.log(res);
-        return (res);
+        function viewProducts() {
+            console.log("Selecting all products...\n");
+            connection.query("SELECT * FROM products", function (err, res) {
+                if (err) throw err;
+                displayProducts(res);
+                console.log(res);
+                return (res);
 
-        connection.end();
-    });
-}
+                connection.end();
+            });
+        }
 
-function searchStockByName(name, callback) {
-    connection.query(`SELECT stock FROM products WHERE product = "${name}"`, function (err, res) {
-        if (err) throw err;
-        callback(res[0]);
+        function searchStockByName(name, callback) {
+            connection.query(`SELECT stock FROM products WHERE product = "${name}"`, function (err, res) {
+                if (err) throw err;
+                callback(res[0]);
 
-    });
+            });
 
-}
+        }
+
+        //function addProduct(res) {
+        //    console.log("Inserting a new product...\n");
+        //    const query = connection.query(
+        //        "INSERT INTO products SET ?",
+        //        {
+        //            product: res.product,
+        //            department: res.department,
+        //            price: res.price,
+        //            stock: res.stock,
+        //            sale: 0,
+        //            sale_price: null
+        //        },
+        //        function (err, res) {
+        //            console.log(res.affectedRows + " product inserted!\n");
+        //             Call updateProduct AFTER the INSERT completes
+        //        });
+
+        //}
 
 
+        function getDepartmentChoices(callback) {
+            connection.query(`SELECT DISTINCT department FROM products`, function (err, res) {
+                if (err) throw err;
+                console.log(res);
+                callback(res);
 
-
-
-
-
-
-
+            });
+        }
