@@ -122,12 +122,12 @@ function getDepartmentChoices(callback) {
 
 
 function displayProducts(inv) {
-    console.log("----------------------------------------------------------------------------------");
+    console.log("-----------------------------------------------------------------------------------");
     for (var i = 0; i < inv.length; i++) {
         console.log(`\nProduct Num: ${inv[i].id} | Product: ${inv[i].product} | Price: $${inv[i].price} | In Stock: ${inv[i].stock}`);
     }
 
-    console.log("\n----------------------------------------------------------------------------------");
+    console.log("\n-----------------------------------------------------------------------------------");
 
 }
 
