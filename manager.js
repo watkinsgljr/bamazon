@@ -154,7 +154,7 @@ inquirer.prompt([
                             message: "How much inventory will we begin with?"
                         }
 
-                    ]).then(function () {
+                    ]).then(function (res) {
                         console.log("Inserting a new product...\n");
                         const query = connection.query(
                             "INSERT INTO products SET ?",
