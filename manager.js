@@ -81,12 +81,42 @@ inquirer.prompt([
 
                         {
                             type: "list",
-                            name: "action",
+                            name: "product",
                             message: "Which product are you replenishing today?",
                             choices: choicesDis,
                         },
 
-                    ])
+                        {
+                            type: "input",
+                            name: "quantity",
+                            message: "How many units are you adding?",
+                            choices: choicesDis,
+                        },
+
+                    ]).then(function (response) {
+
+                        console.log(response.product);
+
+                        searchStockByName(response.product, function (res) {
+
+                            console.log(`Adding ${response.quantity} ${response.product}(s)...\n`);
+                            const query = connection.query(
+                                "UPDATE products SET ? WHERE ?",
+                                [
+                                    {
+                                        stock: res.stock + parseInt(response.quantity)
+                                    },
+                                    {
+                                        product: response.product
+                                    }
+                                ],
+                                function (err, res) {
+                                    console.log(res.affectedRows + " products updated!\n");
+                                }
+                            );
+                        });
+
+                    });
 
                 });
 
@@ -120,6 +150,27 @@ function restockProduct(callback) {
         callback(res);
 
     });
+}
+
+function viewProducts() {
+    console.log("Selecting all products...\n");
+    connection.query("SELECT * FROM products", function (err, res) {
+        if (err) throw err;
+        displayProducts(res);
+        console.log(res);
+        return (res);
+
+        connection.end();
+    });
+}
+
+function searchStockByName(name, callback) {
+    connection.query(`SELECT stock FROM products WHERE product = "${name}"`, function (err, res) {
+        if (err) throw err;
+        callback(res[0]);
+
+    });
+
 }
 
 
