@@ -46,6 +46,7 @@ function readItems() {
 function displayProducts(inv) {
     for (var i = 0; i < inv.length; i++) {
         console.log(`\nProduct Num: ${inv[i].id} | Product: ${inv[i].product} | Price: $${inv[i].price}`);
+        console.log("\n\n")
     }    
 
 }
@@ -90,7 +91,7 @@ function takeCustomerOrder() {
                     items += 1;
                 }
                 console.log("\n-----------------------------------------------------------------------------------");
-                console.log(`\n ${items} items added to your cart!\n`);
+                console.log(`\n ${items} item(s) added to your cart!\n`);
                 console.log("\n-----------------------------------------------------------------------------------\n");
                 inquirer.prompt([
 
@@ -143,7 +144,10 @@ function checkout(cart) {
 
     const salesTax = cost * .07;
     const totalCost = salesTax + cost;
-    console.log(`\nTotal Before Tax: $${cost} \n Sales Tax: $${salesTax} \n Total: $${totalCost} \n \n \n`);
+    console.log("\n-----------------------------------------------------------------------------------");
+    console.log(`\n                         Total Before Tax: $${parseFloat(Math.round(cost * 100) / 100).toFixed(2)} \n
+                         Sales Tax: $${parseFloat(Math.round(salesTax * 100) / 100).toFixed(2)} \n 
+                         Total: $${parseFloat(Math.round(totalCost * 100) / 100).toFixed(2)} \n \n \n`);
 
     inquirer.prompt([
 
