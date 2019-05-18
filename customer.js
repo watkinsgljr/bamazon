@@ -22,8 +22,10 @@ connection.connect(function (err) {
     console.log("connected as id " + connection.threadId);
 
 });
-
-let inventory = readItems();
+console.log("\n------------------------------------------------------------------------------------------------------------\n");
+console.log("\nWELCOME TO BAMAZON STORE, THE BEST COMMAND LINE STORE IN ALL THE WEB. TAKE A LOOK AT OUR PRODUCTS BELOW!!\n")
+console.log("\n------------------------------------------------------------------------------------------------------------");
+readItems();
 let shoppingCart = [];
 takeCustomerOrder();
 
@@ -37,23 +39,20 @@ function readItems() {
     connection.query("SELECT * FROM products", function (err, res) {
         if (err) throw err;
         displayProducts(res);
-        console.log(res);
-        return (res);
         
-        connection.end();
     });
 }
 
 function displayProducts(inv) {
     for (var i = 0; i < inv.length; i++) {
-        console.log(`Product Num: ${inv[i].id} | Product: ${inv[i].product} | Price: $${inv[i].price}`);
+        console.log(`\nProduct Num: ${inv[i].id} | Product: ${inv[i].product} | Price: $${inv[i].price}`);
     }    
 
 }
 
 function searchInvById(id, callback) {
     console.log("Finding item...\n");
-    connection.query(`SELECT * FROM products WHERE id = ${id}`, function (err, res) {
+    connection.query(`\nSELECT * FROM products WHERE id = ${id}`, function (err, res) {
         if (err) throw err;
         
         callback(res[0]);
@@ -83,15 +82,41 @@ function takeCustomerOrder() {
 
         searchInvById(order.itemId, function (customerOrder) {
 
-            console.log(customerOrder);
 
             if (order.quantity <= customerOrder.stock) {
+                let items = 0;
                 for (var i = 0; i < order.quantity; i++) {
                     addToCart(customerOrder);
+                    items += 1;
                 }
+                console.log("\n-----------------------------------------------------------------------------------");
+                console.log(`\n ${items} items added to your cart!\n`);
+                console.log("\n-----------------------------------------------------------------------------------\n");
+                inquirer.prompt([
+
+                    {
+                        type: "list",
+                        name: "action",
+                        message: "What would you like to do next?",
+                        choices: ["CONTINUE SHOPPING", "CHECKOUT"]
+                    },
+
+                ]).then(function (next) {
+
+                    if (next.action === "CONTINUE SHOPPING") {
+
+                        takeCustomerOrder();
+
+
+                    } else if (next.action === "CHECKOUT") {
+
+                        checkout(shoppingCart);
+                    }
+
+                });
 
             } else {
-                console.log(`I'm sorry but you orderd ${order.quantity} ${customerOrder.product} but we have ${customerOrder.stock} in stock. Try placing a different order.`);
+                console.log(`\nI'm sorry but you orderd ${order.quantity} ${customerOrder.product} but we have ${customerOrder.stock} in stock. Try placing a different order.`);
                 takeCustomerOrder();
 
 
@@ -105,30 +130,7 @@ function takeCustomerOrder() {
 
 function addToCart(order) {
     shoppingCart.push(order);
-    console.log("Added to cart!");
-    console.log(shoppingCart);
-    inquirer.prompt([
 
-        {
-            type: "list",
-            name: "action",
-            message: "What would you like to do next?",
-            choices: ["CONTINUE SHOPPING", "CHECKOUT"]
-        },
-
-    ]).then(function (next) {
-
-        if (next.action === "CONTINUE SHOPPING") {
-
-            takeCustomerOrder();
-
-
-        } else if (next.action === "CHECKOUT") {
-
-            checkout(shoppingCart);
-        }
-
-    });
 
 }
 
@@ -141,7 +143,7 @@ function checkout(cart) {
 
     const salesTax = cost * .07;
     const totalCost = salesTax + cost;
-    console.log(`Total Before Tax: $${cost} \n Sales Tax: $${salesTax} \n Total: $${totalCost} \n \n \n`);
+    console.log(`\nTotal Before Tax: $${cost} \n Sales Tax: $${salesTax} \n Total: $${totalCost} \n \n \n`);
 
     inquirer.prompt([
 
@@ -156,7 +158,10 @@ function checkout(cart) {
     ]).then(function (next) {
 
         if (next.confirm === "Yes") {
+            console.log("\n-----------------------------------------------------------------------------------");
             console.log("Thank you for shopping with Bamazon. Your order will arive in 2-3 business days!")
+            console.log("\n-----------------------------------------------------------------------------------");
+            connection.end();
 
 
         } else if (next.confirm === "No, I need to add a new order") {
@@ -164,8 +169,10 @@ function checkout(cart) {
             takeCustomerOrder();
 
         } else {
-
-            console.log("Good bye!")
+            console.log("\n-----------------------------------------------------------------------------------");
+            console.log("Good bye!");
+            console.log("\n-----------------------------------------------------------------------------------");
+            connection.end();
 
         }
     });

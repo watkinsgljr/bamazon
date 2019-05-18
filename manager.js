@@ -56,7 +56,8 @@ function viewLowInventory(cutoff = 51) {
     console.log("\nFinding low inventory...\n");
     connection.query(`SELECT * FROM products WHERE stock < ${cutoff}`, function (err, res) {
         if (err) throw err;
-        console.log(`These items have less than ${cutoff} units in stock. Time to restock!`);
+        console.log("-----------------------------------------------------------------------------------");
+        console.log(`Time to restock these products!`);
         displayProducts(res);
 
     });
@@ -91,25 +92,6 @@ function searchStockByName(name, callback) {
     });
 
 }
-
-//function addProduct(res) {
-//    console.log("Inserting a new product...\n");
-//    const query = connection.query(
-//        "INSERT INTO products SET ?",
-//        {
-//            product: res.product,
-//            department: res.department,
-//            price: res.price,
-//            stock: res.stock,
-//            sale: 0,
-//            sale_price: null
-//        },
-//        function (err, res) {
-//            console.log(res.affectedRows + " product inserted!\n");
-//             Call updateProduct AFTER the INSERT completes
-//        });
-
-//}
 
 
 function getDepartmentChoices(callback) {
