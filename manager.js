@@ -51,7 +51,7 @@ inquirer.prompt([
 });
 
 
-function viewLowInventory(cutoff = 51) {
+function viewLowInventory(cutoff = 25) {
 
     console.log("\nFinding low inventory...\n");
     connection.query(`SELECT * FROM products WHERE stock < ${cutoff}`, function (err, res) {

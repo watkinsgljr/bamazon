@@ -46,8 +46,8 @@ function readItems() {
 function displayProducts(inv) {
     for (var i = 0; i < inv.length; i++) {
         console.log(`\nProduct Num: ${inv[i].id} | Product: ${inv[i].product} | Price: $${inv[i].price}`);
-        console.log("\n\n")
-    }    
+        
+    } console.log("\n\n")
 
 }
 
