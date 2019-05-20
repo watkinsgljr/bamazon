@@ -1,4 +1,8 @@
 ﻿# Bamazon
+
+https://drive.google.com/file/d/1rucrxA8KaEXwdN4I42WA5AdGHKs7D0uc/view
+
+
 Welcome to Bamazon, the best command line store in all the web.
 
 Customer Mode:
