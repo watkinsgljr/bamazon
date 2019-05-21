@@ -25,30 +25,33 @@ connection.connect(function (err) {
 
 console.log("Bamazon Manager \n");
 
-inquirer.prompt([
+setTimeout(function () {
 
-    {
-        type: "password",
-        name: "myPassword",
-        message: "Please input your password to continue."
-    }
+    inquirer.prompt([
 
-]).then(function (auth) {
+        {
+            type: "password",
+            name: "myPassword",
+            message: "Please input your password to continue."
+        }
+
+    ]).then(function (auth) {
 
 
-    if (auth.myPassword != "pass") {
+        if (auth.myPassword != "pass") {
 
-        console.log("==============================================");
-        console.log("Incorrect password");
-        console.log("Verify you password and try again");
-        console.log("==============================================");
-    }
-    else {
+            console.log("==============================================");
+            console.log("Incorrect password");
+            console.log("Verify you password and try again");
+            console.log("==============================================");
+        }
+        else {
 
-        runMainLoop();
+            runMainLoop();
 
-    }
-});
+        }
+    });
+}, 1000);
 
 
 function viewLowInventory(cutoff = 25) {
