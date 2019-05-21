@@ -1,6 +1,12 @@
 ﻿# Bamazon
 
+Customer View
+
 https://drive.google.com/file/d/1rucrxA8KaEXwdN4I42WA5AdGHKs7D0uc/view
+
+Manager View
+
+https://drive.google.com/file/d/1sD0z-AwpSH78LSZVZ5XiZ4curaO2ivjq/view
 
 
 Welcome to Bamazon, the best command line store in all the web.
